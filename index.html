@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="HANA vault: an interactive local design prototype for connected files and projects.">
+  <title>HANA Vault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Parkinsans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to vault</a>
+
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="#" aria-label="HANA vault home">
+      <span class="brand-mark" data-icon="branch"></span><span class="brand-name">HANA</span>
+    </a>
+
+    <label class="team-switch">
+      <span class="team-avatar">H</span>
+      <select id="team" aria-label="Choose a vault"></select>
+      <button type="button" id="rename-vault" class="icon-button" aria-label="Rename this vault" title="Rename this vault"><span data-icon="edit"></span></button>
+    </label>
+
+    <nav class="primary-nav" aria-label="Vault navigation">
+      <button class="nav-item active" data-nav="all"><span data-icon="vault"></span><span class="nav-label">Main vault</span><span class="nav-count" id="nav-count"></span></button>
+      <button class="nav-item" data-nav="recent"><span data-icon="clock"></span><span class="nav-label">Recent</span></button>
+      <button class="nav-item" data-nav="inbox"><span data-icon="inbox"></span><span class="nav-label">Inbox</span><span class="nav-count" id="inbox-count"></span></button>
+      <button class="nav-item" data-nav="starred"><span data-icon="bookmark"></span><span class="nav-label">Saved</span></button>
+    </nav>
+
+    <div class="section-heading"><span>Nodes</span><button class="icon-button" id="sidebar-add" aria-label="Add main node"><span data-icon="plus"></span></button></div>
+    <div id="node-navigation" class="node-navigation"></div>
+
+    <div class="sidebar-foot">
+      <span class="local-indicator"><i></i>Local prototype</span>
+      <button class="icon-button" id="clear-data" aria-label="Remove added files" title="Remove added files"><span data-icon="trash"></span></button>
+      <button class="icon-button" id="about" aria-label="About this design"><span data-icon="info"></span></button>
+    </div>
+  </aside>
+
+  <main id="main-content" tabindex="-1">
+    <section class="page-heading">
+      <div>
+        <h1 id="page-title">Main vault</h1>
+        <p id="page-description"></p>
+      </div>
+      <div class="heading-actions">
+        <button class="button secondary" id="new-node"><span data-icon="plus"></span> New node</button>
+        <button class="button primary" id="upload"><span data-icon="upload"></span> Add files</button>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Vault tools">
+      <label class="search">
+        <span data-icon="search"></span>
+        <input id="search" type="search" placeholder="Search files and nodes" aria-label="Search files and nodes">
+        <kbd>/</kbd>
+      </label>
+      <div class="view-switch" role="group" aria-label="Choose vault view">
+        <button class="active" id="map-view" aria-pressed="true"><span data-icon="map"></span> Map</button>
+        <button id="library-view" aria-pressed="false"><span data-icon="grid"></span> Library</button>
+      </div>
+      <button class="icon-button inspector-toggle" id="inspector-toggle" aria-label="Toggle details panel" aria-expanded="false"><span data-icon="panel"></span></button>
+    </section>
+
+    <div class="vault-body">
+      <section class="workspace-surface" id="drop-zone" aria-label="Vault workspace">
+        <div id="map-container" class="map-container">
+          <canvas id="map-canvas" aria-label="Spatial connections between vault nodes and files"></canvas>
+          <div id="map-labels"></div>
+          <div id="vault-space" class="vault-space" style="visibility:hidden;opacity:0" aria-label="All vaults"></div>
+          <div class="map-context">
+            <button id="back-to-vault" class="text-button" hidden><span data-icon="arrow"></span> All nodes</button>
+            <span id="map-summary"></span>
+          </div>
+          <form class="ask" id="ask-form" autocomplete="off">
+            <div id="ask-answer" class="ask-answer" hidden></div>
+            <label class="ask-bar">
+              <button type="button" id="ask-attach" class="icon-button" aria-label="Add images, files or docs" title="Add images, files or docs"><span data-icon="plus"></span></button>
+              <input id="ask-input" placeholder="Ask HANA about your files" aria-label="Ask HANA about your files">
+              <button type="button" id="ask-mic" class="icon-button" aria-label="Ask by voice" title="Ask by voice"><span data-icon="mic"></span></button>
+              <button type="button" id="ask-clear" class="icon-button" aria-label="Clear answer" hidden><span data-icon="close"></span></button>
+            </label>
+          </form>
+          <div class="map-controls">
+            <button class="icon-button" id="orbit-left" aria-label="Rotate map left"><span data-icon="rotate"></span></button>
+            <button class="icon-button" id="orbit-right" aria-label="Rotate map right"><span data-icon="rotate"></span></button>
+            <span class="divider"></span>
+            <button class="icon-button" id="zoom-out" aria-label="Zoom out"><span data-icon="minus"></span></button>
+            <span id="zoom-value">100%</span>
+            <button class="icon-button" id="zoom-in" aria-label="Zoom in"><span data-icon="plus"></span></button>
+            <button class="icon-button" id="reset-view" aria-label="Reset map view"><span data-icon="focus"></span></button>
+          </div>
+        </div>
+
+        <div id="library" class="library" hidden>
+          <div class="library-options">
+            <div class="library-filters" role="group" aria-label="Filter by file type">
+              <button class="active" data-type="all">All</button>
+              <button data-type="document">Documents</button>
+              <button data-type="image">Images</button>
+              <button data-type="data">Data</button>
+            </div>
+            <label class="sort-control">
+              <span class="sr-only">Sort files</span>
+              <select id="sort-files" aria-label="Sort files">
+                <option value="recent">Newest</option>
+                <option value="name">Name</option>
+                <option value="type">Type</option>
+              </select>
+            </label>
+            <div class="display-switch" role="group" aria-label="File layout">
+              <button class="icon-button" id="grid-layout" aria-label="Grid layout" aria-pressed="true"><span data-icon="grid"></span></button>
+              <button class="icon-button" id="list-layout" aria-label="List layout" aria-pressed="false"><span data-icon="list"></span></button>
+            </div>
+          </div>
+          <div id="file-grid" class="file-grid"></div>
+          <div class="pagination">
+            <span id="page-range" role="status" aria-live="polite"></span>
+            <div>
+              <button id="page-previous" class="button secondary">Previous</button>
+              <select id="page-number" aria-label="Results page"></select>
+              <button id="page-next" class="button secondary">Next</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="inspector" id="inspector" aria-label="Vault details"></aside>
+    </div>
+
+    <section class="recent-section">
+      <div class="recent-heading"><h2>Recently added</h2><button class="text-button" id="see-all">View all <span data-icon="arrow"></span></button></div>
+      <div id="recent-files" class="recent-files"></div>
+    </section>
+  </main>
+</div>
+
+<input id="file-input" type="file" multiple hidden>
+
+<dialog id="node-dialog" aria-labelledby="node-dialog-title">
+  <form id="node-form">
+    <div class="dialog-heading"><h2 id="node-dialog-title">Create a node</h2><button type="button" class="icon-button close-dialog" aria-label="Close"><span data-icon="close"></span></button></div>
+    <label>Name<input id="node-name" required maxlength="70" placeholder="e.g. Climate research"></label>
+    <label>Connect under<select id="node-parent"></select></label>
+    <fieldset class="color-fieldset"><legend>Accent color</legend><div id="color-options" class="color-options"></div></fieldset>
+    <div class="dialog-actions"><button type="button" class="button secondary close-dialog">Cancel</button><button type="submit" class="button primary">Create node</button></div>
+  </form>
+</dialog>
+
+<dialog id="preview-dialog"><div id="preview-content"></div></dialog>
+
+<dialog id="route-dialog" aria-labelledby="route-dialog-title">
+  <form id="route-form">
+    <div class="dialog-heading"><h2 id="route-dialog-title">Add to a node</h2><button type="button" class="icon-button close-dialog" aria-label="Close"><span data-icon="close"></span></button></div>
+    <p id="route-file-name" class="muted"></p>
+    <label>Destination<select id="route-node"></select></label>
+    <div class="dialog-actions"><button type="button" class="button secondary close-dialog">Cancel</button><button class="button primary" type="submit">Add connection</button></div>
+  </form>
+</dialog>
+
+<div id="doc-stage" class="doc-stage" role="dialog" aria-modal="true" aria-label="File viewer" hidden></div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="app.js" defer></script>
+<script src="viewer.js" defer></script>
+</body>
+</html>

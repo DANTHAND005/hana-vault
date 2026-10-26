@@ -1,0 +1,10 @@
+references/
+screenshots/
+.DS_Store
+previous-design/
+DESIGN.md
+UX-REVIEW.md
+VERIFICATION.md
+checks/stress-fixtures/
+checks/vault-check.*
+checks/create-stress-fixtures.py
